@@ -10,8 +10,8 @@ podTemplate(label: 'test', cloud: 'kubernetes',
       GIT_COMMIT = source_code.GIT_COMMIT.substring(0, 6).toLowerCase()
       GIT_BRANCH = source_code.GIT_BRANCH.replaceAll('origin/', '').toLowerCase()
       VERSION_IDENTIFIER = "${GIT_BRANCH}-${GIT_COMMIT}"
-      APP_DOCKER_TAG = "cicd-demo:${VERSION_IDENTIFIER}"
-      TESTS_DOCKER_TAG = "cicd-demo-tests:${VERSION_IDENTIFIER}"
+      APP_DOCKER_TAG = "cicd-demo:latest"
+      TESTS_DOCKER_TAG = "cicd-demo-tests:latest"
       try{
           container('docker'){
             parallel(
@@ -36,7 +36,7 @@ podTemplate(label: 'test', cloud: 'kubernetes',
             }},
             'integrationTests': {stage('integration tests'){
                 container('kubectl'){
-                    sh "kubectl run --env=\"BASE_URL=http://cicd-demo-service:3000\" cicd-demo-integration-tests-${GIT_COMMIT} --image=${TESTS_DOCKER_TAG} --restart=\"Never\""
+                    sh "kubectl run -i --env=\"BASE_URL=http://cicd-demo-service:3000\" cicd-demo-integration-tests-${GIT_COMMIT} --image=${TESTS_DOCKER_TAG} --restart=\"Never\""
                 }
             }}
           )
